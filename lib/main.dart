@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:printing/printing.dart';
@@ -126,7 +128,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
     });
   }
 
-  Future<void> _generarPdf() async {
+  Future<Uint8List> _construirPdfBytes() async {
     final items = detalles
         .where(
           (d) =>
@@ -145,7 +147,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
         )
         .toList();
 
-    final bytes = await NotaVentaPdfGenerator.build(
+    return NotaVentaPdfGenerator.build(
       nroNota: nroNotaCtrl.text,
       lugar: lugarCtrl.text,
       dia: diaCtrl.text,
@@ -156,8 +158,19 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
       items: items,
       totalGeneral: totalGeneral,
     );
+  }
 
+  Future<void> _generarPdf() async {
+    final bytes = await _construirPdfBytes();
     await Printing.layoutPdf(onLayout: (_) async => bytes);
+  }
+
+  Future<void> _compartirPdf() async {
+    final bytes = await _construirPdfBytes();
+    final nro = nroNotaCtrl.text.trim().isEmpty
+        ? '0001'
+        : nroNotaCtrl.text.trim();
+    await Printing.sharePdf(bytes: bytes, filename: 'nota_venta_$nro.pdf');
   }
 
   void _nuevaNota() {
@@ -210,9 +223,14 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
         title: const Text('Nota de Venta'),
         actions: [
           IconButton(
-            tooltip: 'Generar PDF',
+            tooltip: 'Generar / Imprimir PDF',
             onPressed: _generarPdf,
             icon: const Icon(Icons.picture_as_pdf_outlined),
+          ),
+          IconButton(
+            tooltip: 'Compartir PDF',
+            onPressed: _compartirPdf,
+            icon: const Icon(Icons.share_outlined),
           ),
           IconButton(
             tooltip: 'Nueva nota',
