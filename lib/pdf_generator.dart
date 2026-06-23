@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -22,7 +24,7 @@ class NotaVentaPdfGenerator {
   static const PdfColor azul = PdfColor.fromInt(0xFF1565C0);
   static const PdfColor azulClaro = PdfColor.fromInt(0xFFD6ECFA);
 
-  static Future<List<int>> build({
+  static Future<Uint8List> build({
     required String nroNota,
     required String lugar,
     required String dia,
@@ -71,7 +73,12 @@ class NotaVentaPdfGenerator {
   }
 
   static pw.Widget _buildHeader(
-      String nroNota, String lugar, String dia, String mes, String ano) {
+    String nroNota,
+    String lugar,
+    String dia,
+    String mes,
+    String ano,
+  ) {
     return pw.Row(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -128,8 +135,10 @@ class NotaVentaPdfGenerator {
       children: [
         pw.Row(
           children: [
-            pw.Text('Señor (es): ',
-                style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
+            pw.Text(
+              'Señor (es): ',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
+            ),
             pw.Expanded(
               child: pw.Container(
                 decoration: const pw.BoxDecoration(
@@ -143,15 +152,19 @@ class NotaVentaPdfGenerator {
         pw.SizedBox(height: 6),
         pw.Row(
           children: [
-            pw.Text('Por lo siguiente: ',
-                style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
+            pw.Text(
+              'Por lo siguiente: ',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
+            ),
             pw.Expanded(
               child: pw.Container(
                 decoration: const pw.BoxDecoration(
                   border: pw.Border(bottom: pw.BorderSide(width: 0.5)),
                 ),
-                child: pw.Text(porLoSiguiente,
-                    style: const pw.TextStyle(fontSize: 10)),
+                child: pw.Text(
+                  porLoSiguiente,
+                  style: const pw.TextStyle(fontSize: 10),
+                ),
               ),
             ),
           ],

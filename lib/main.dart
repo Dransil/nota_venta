@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:printing/printing.dart';
+
+import 'pdf_generator.dart';
 
 void main() {
   runApp(const NotaVentaApp());
@@ -34,16 +37,30 @@ class DetalleItem {
   TextEditingController cant = TextEditingController();
   TextEditingController detalle = TextEditingController();
   TextEditingController pu = TextEditingController();
+  TextEditingController total = TextEditingController();
 
   double get cantidad => double.tryParse(cant.text.replaceAll(',', '.')) ?? 0;
   double get precioUnitario =>
       double.tryParse(pu.text.replaceAll(',', '.')) ?? 0;
-  double get total => cantidad * precioUnitario;
+  double get totalCalculado => cantidad * precioUnitario;
+  double get totalValue =>
+      double.tryParse(total.text.replaceAll(',', '.')) ?? 0;
+
+  /// Recalcula el total automáticamente a partir de Cant. x P.U.
+  /// (el usuario puede luego sobrescribirlo manualmente).
+  void recalcularTotal() {
+    if (cant.text.isEmpty && pu.text.isEmpty) {
+      total.text = '';
+    } else {
+      total.text = totalCalculado.toStringAsFixed(2);
+    }
+  }
 
   void dispose() {
     cant.dispose();
     detalle.dispose();
     pu.dispose();
+    total.dispose();
   }
 }
 
@@ -94,7 +111,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
   }
 
   double get totalGeneral =>
-      detalles.fold(0.0, (sum, item) => sum + item.total);
+      detalles.fold(0.0, (sum, item) => sum + item.totalValue);
 
   void _agregarFila() {
     setState(() {
@@ -107,6 +124,40 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
       detalles[index].dispose();
       detalles.removeAt(index);
     });
+  }
+
+  Future<void> _generarPdf() async {
+    final items = detalles
+        .where(
+          (d) =>
+              d.detalle.text.trim().isNotEmpty ||
+              d.cant.text.trim().isNotEmpty ||
+              d.pu.text.trim().isNotEmpty ||
+              d.total.text.trim().isNotEmpty,
+        )
+        .map(
+          (d) => DetalleItemPdf(
+            cant: d.cant.text,
+            detalle: d.detalle.text,
+            pu: d.pu.text,
+            total: d.total.text,
+          ),
+        )
+        .toList();
+
+    final bytes = await NotaVentaPdfGenerator.build(
+      nroNota: nroNotaCtrl.text,
+      lugar: lugarCtrl.text,
+      dia: diaCtrl.text,
+      mes: mesCtrl.text,
+      ano: anoCtrl.text,
+      senor: senorCtrl.text,
+      porLoSiguiente: porLoSiguienteCtrl.text,
+      items: items,
+      totalGeneral: totalGeneral,
+    );
+
+    await Printing.layoutPdf(onLayout: (_) async => bytes);
   }
 
   void _nuevaNota() {
@@ -158,6 +209,11 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
         foregroundColor: Colors.white,
         title: const Text('Nota de Venta'),
         actions: [
+          IconButton(
+            tooltip: 'Generar PDF',
+            onPressed: _generarPdf,
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+          ),
           IconButton(
             tooltip: 'Nueva nota',
             onPressed: _nuevaNota,
@@ -348,7 +404,8 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                           decimal: true,
                         ),
                         textAlign: TextAlign.center,
-                        onChanged: (_) => setState(() {}),
+                        onChanged: (_) =>
+                            setState(() => item.recalcularTotal()),
                       ),
                     ),
                   ),
@@ -368,7 +425,8 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                           decimal: true,
                         ),
                         textAlign: TextAlign.right,
-                        onChanged: (_) => setState(() {}),
+                        onChanged: (_) =>
+                            setState(() => item.recalcularTotal()),
                       ),
                     ),
                   ),
@@ -376,10 +434,14 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                     width: 80,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        item.total.toStringAsFixed(2),
+                      child: TextField(
+                        controller: item.total,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         textAlign: TextAlign.right,
                         style: const TextStyle(fontWeight: FontWeight.w600),
+                        onChanged: (_) => setState(() {}),
                       ),
                     ),
                   ),
