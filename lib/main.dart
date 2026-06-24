@@ -48,8 +48,6 @@ class DetalleItem {
   double get totalValue =>
       double.tryParse(total.text.replaceAll(',', '.')) ?? 0;
 
-  /// Recalcula el total automáticamente a partir de Cant. x P.U.
-  /// (el usuario puede luego sobrescribirlo manualmente).
   void recalcularTotal() {
     if (cant.text.isEmpty && pu.text.isEmpty) {
       total.text = '';
@@ -74,14 +72,15 @@ class NotaVentaPage extends StatefulWidget {
 }
 
 class _NotaVentaPageState extends State<NotaVentaPage> {
-  // Cabecera
   final lugarCtrl = TextEditingController();
   final diaCtrl = TextEditingController();
   final mesCtrl = TextEditingController();
   final anoCtrl = TextEditingController();
   final senorCtrl = TextEditingController();
   final porLoSiguienteCtrl = TextEditingController();
-  final nroNotaCtrl = TextEditingController(text: '0001');
+
+  /// N° de nota: texto libre, vacío por defecto.
+  final TextEditingController nroNotaCtrl = TextEditingController();
 
   final List<DetalleItem> detalles = [];
 
@@ -91,7 +90,6 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
   @override
   void initState() {
     super.initState();
-    // Por defecto se mantiene una lista con algunas filas vacías, como el talonario.
     for (int i = 0; i < 10; i++) {
       detalles.add(DetalleItem());
     }
@@ -160,17 +158,30 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
     );
   }
 
+  /// Nombre de archivo con la fecha de hoy en formato ddMMyy.
+  /// Ej.: 23/06/2026 -> "nota_venta_230626"
+  String _nombreArchivoConFecha() {
+    final ahora = DateTime.now();
+    final dd = ahora.day.toString().padLeft(2, '0');
+    final mm = ahora.month.toString().padLeft(2, '0');
+    final yy = (ahora.year % 100).toString().padLeft(2, '0');
+    return 'nota_venta_$dd$mm$yy';
+  }
+
   Future<void> _generarPdf() async {
     final bytes = await _construirPdfBytes();
-    await Printing.layoutPdf(onLayout: (_) async => bytes);
+    await Printing.layoutPdf(
+      onLayout: (_) async => bytes,
+      name: _nombreArchivoConFecha(),
+    );
   }
 
   Future<void> _compartirPdf() async {
     final bytes = await _construirPdfBytes();
-    final nro = nroNotaCtrl.text.trim().isEmpty
-        ? '0001'
-        : nroNotaCtrl.text.trim();
-    await Printing.sharePdf(bytes: bytes, filename: 'nota_venta_$nro.pdf');
+    await Printing.sharePdf(
+      bytes: bytes,
+      filename: '${_nombreArchivoConFecha()}.pdf',
+    );
   }
 
   void _nuevaNota() {
@@ -202,8 +213,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                 for (int i = 0; i < 10; i++) {
                   detalles.add(DetalleItem());
                 }
-                final n = int.tryParse(nroNotaCtrl.text) ?? 0;
-                nroNotaCtrl.text = (n + 1).toString().padLeft(4, '0');
+                nroNotaCtrl.clear();
               });
               Navigator.pop(ctx);
             },
@@ -303,14 +313,14 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
               Row(
                 children: [
                   const Text(
-                    'N° ',
+                    'Código ',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     width: 70,
                     child: TextField(
                       controller: nroNotaCtrl,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                     ),
                   ),
                 ],
@@ -388,7 +398,6 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
       ),
       child: Column(
         children: [
-          // Encabezado
           Container(
             color: azul,
             child: const Row(
@@ -401,7 +410,6 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
               ],
             ),
           ),
-          // Filas
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
