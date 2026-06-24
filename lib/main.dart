@@ -17,7 +17,7 @@ class NotaVentaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     const azul = Color(0xFF1565C0);
     return MaterialApp(
-      title: 'Nota de Venta',
+      title: 'Nota de entrega',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -177,7 +177,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Nueva nota de venta'),
+        title: const Text('Nueva nota de entrega'),
         content: const Text(
           '¿Deseas limpiar todos los campos y empezar una nota nueva?',
         ),
@@ -220,7 +220,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
       appBar: AppBar(
         backgroundColor: azul,
         foregroundColor: Colors.white,
-        title: const Text('Nota de Venta'),
+        title: const Text('Nota de entrega'),
         actions: [
           IconButton(
             tooltip: 'Generar / Imprimir PDF',
@@ -292,7 +292,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'NOTA DE VENTA',
+                'NOTA DE ENTREGA',
                 style: TextStyle(
                   color: azul,
                   fontWeight: FontWeight.w900,
