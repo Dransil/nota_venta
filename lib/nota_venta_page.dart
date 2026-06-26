@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:printing/printing.dart';
 
 import 'pdf_generator.dart';
+import 'presets_store.dart';
 
 /// Pantalla de la Nota de Entrega (antes vivía directamente en main.dart).
 /// Una fila de detalle: Cant. / Detalle / P.U. / Total
@@ -63,7 +64,40 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 10; i++) {
+    _cargarFilasIniciales();
+  }
+
+  /// Carga los detalles predefinidos (ya guardados con shared_preferences)
+  /// y los usa para precargar la columna "Detalle" de las primeras filas.
+  /// Si no hay presets guardados, deja filas vacías como antes.
+  Future<void> _cargarFilasIniciales() async {
+    await PresetsStore.instance.cargar();
+    setState(() {
+      _crearFilas();
+    });
+  }
+
+  /// Construye las filas de detalle: una por cada preset guardado
+  /// (con el texto ya escrito), más algunas filas vacías extra para que
+  /// se puedan seguir agregando ítems manuales.
+  void _crearFilas() {
+    for (final d in detalles) {
+      d.dispose();
+    }
+    detalles.clear();
+
+    final presets = PresetsStore.instance.detalles;
+
+    for (final texto in presets) {
+      final item = DetalleItem();
+      item.detalle.text = texto;
+      detalles.add(item);
+    }
+
+    // Filas vacías adicionales: si no hay presets, deja 10 como antes;
+    // si ya hay presets, agrega algunas extra por si se necesita más.
+    final extras = presets.isEmpty ? 10 : 5;
+    for (int i = 0; i < extras; i++) {
       detalles.add(DetalleItem());
     }
   }
@@ -179,13 +213,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                 anoCtrl.clear();
                 senorCtrl.clear();
                 porLoSiguienteCtrl.clear();
-                for (final d in detalles) {
-                  d.dispose();
-                }
-                detalles.clear();
-                for (int i = 0; i < 10; i++) {
-                  detalles.add(DetalleItem());
-                }
+                _crearFilas();
                 nroNotaCtrl.clear();
               });
               Navigator.pop(ctx);
