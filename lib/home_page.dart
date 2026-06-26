@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'nota_venta_page.dart';
+import 'presets_page.dart';
 
 /// Menú principal de la app. Desde aquí se navega a las distintas
 /// pantallas (por ahora solo "Nota de Entrega", pero queda listo para
@@ -40,6 +41,18 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const NotaVentaPage()),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            _MenuCard(
+              icon: Icons.list_alt_outlined,
+              title: 'Detalles predefinidos',
+              subtitle: 'Configurar textos que se precargan en cada nota',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PresetsPage()),
                 );
               },
             ),
