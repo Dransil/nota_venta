@@ -137,7 +137,7 @@ class _PresetsPageState extends State<PresetsPage> {
                             controller: _nuevoCtrl,
                             decoration: const InputDecoration(
                               labelText: 'Nuevo detalle',
-                              hintText: 'Ej: Cemento, Transporte, Mano de obra...',
+                              hintText: 'Ej: Producto, servicio, etc...',
                               border: OutlineInputBorder(),
                               isDense: true,
                             ),
@@ -148,9 +148,7 @@ class _PresetsPageState extends State<PresetsPage> {
                         const SizedBox(width: 8),
                         FilledButton(
                           onPressed: _agregar,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: azul,
-                          ),
+                          style: FilledButton.styleFrom(backgroundColor: azul),
                           child: const Icon(Icons.add),
                         ),
                       ],
