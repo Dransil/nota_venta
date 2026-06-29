@@ -4,8 +4,9 @@ import 'nota_venta_page.dart';
 import 'presets_page.dart';
 
 /// Menú principal de la app. Desde aquí se navega a las distintas
-/// pantallas (por ahora solo "Nota de Entrega", pero queda listo para
-/// agregar más tipos de documentos a futuro).
+/// pantallas (por ahora "Nota de Entrega" y "Detalles predefinidos").
+/// Las tarjetas ocupan la mayor parte de la pantalla para que sean
+/// grandes y fáciles de tocar.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -20,50 +21,42 @@ class HomePage extends StatelessWidget {
         title: const Text('Mis Notas'),
       ),
       body: SafeArea(
-        child: ListView(
+        child: Padding(
           padding: const EdgeInsets.all(16),
-          children: [
-            const SizedBox(height: 8),
-            const Text(
-              '¿Qué deseas hacer?',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: azul,
+          child: Column(
+            children: [
+              Expanded(
+                child: _MenuCard(
+                  icon: Icons.receipt_long_outlined,
+                  title: 'Nota de Entrega',
+                  subtitle: 'Crear una nueva nota de entrega/venta',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const NotaVentaPage()),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            _MenuCard(
-              icon: Icons.receipt_long_outlined,
-              title: 'Nota de Entrega',
-              subtitle: 'Crear una nueva nota de entrega/venta',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const NotaVentaPage()),
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            _MenuCard(
-              icon: Icons.list_alt_outlined,
-              title: 'Detalles predefinidos',
-              subtitle: 'Configurar textos que se precargan en cada nota',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PresetsPage()),
-                );
-              },
-            ),
-            // Aquí se pueden agregar más opciones en el futuro, por ejemplo:
-            // _MenuCard(
-            //   icon: Icons.history_outlined,
-            //   title: 'Historial',
-            //   subtitle: 'Ver notas generadas anteriormente',
-            //   onTap: () {},
-            // ),
-          ],
+              const SizedBox(height: 16),
+              Expanded(
+                child: _MenuCard(
+                  icon: Icons.list_alt_outlined,
+                  title: 'Detalles predefinidos',
+                  subtitle: 'Configurar textos que se precargan en cada nota',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PresetsPage()),
+                    );
+                  },
+                ),
+              ),
+              // Para agregar más opciones a futuro, agrega otro
+              // SizedBox(height: 16) + Expanded(child: _MenuCard(...))
+              // y ajusta el "flex" si quieres tamaños distintos entre tarjetas.
+            ],
+          ),
         ),
       ),
     );
@@ -86,50 +79,44 @@ class _MenuCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
+      elevation: 3,
+      color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         side: BorderSide(color: HomePage.azul.withOpacity(0.25)),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-          child: Row(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
                   color: HomePage.azul.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: HomePage.azul, size: 28),
+                child: Icon(icon, color: HomePage.azul, size: 64),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 20),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.grey),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
             ],
           ),
         ),
