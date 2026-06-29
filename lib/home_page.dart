@@ -5,8 +5,7 @@ import 'presets_page.dart';
 
 /// Menú principal de la app. Desde aquí se navega a las distintas
 /// pantallas (por ahora "Nota de Entrega" y "Detalles predefinidos").
-/// Las tarjetas ocupan la mayor parte de la pantalla para que sean
-/// grandes y fáciles de tocar.
+/// Las tarjetas ocupan la mayor parte de la pantalla, en partes iguales.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -15,6 +14,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFEAF4FB),
       appBar: AppBar(
         backgroundColor: azul,
         foregroundColor: Colors.white,
@@ -24,12 +24,13 @@ class HomePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: _MenuCard(
                   icon: Icons.receipt_long_outlined,
                   title: 'Nota de Entrega',
-                  subtitle: 'Crear una nueva nota de entrega/venta',
+                  subtitle: 'Crear una nueva nota\nde entrega/venta',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -42,8 +43,8 @@ class HomePage extends StatelessWidget {
               Expanded(
                 child: _MenuCard(
                   icon: Icons.list_alt_outlined,
-                  title: 'Detalles predefinidos',
-                  subtitle: 'Configurar textos que se precargan en cada nota',
+                  title: 'Detalles\npredefinidos',
+                  subtitle: 'Configurar textos que se\nprecargan en cada nota',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -52,9 +53,6 @@ class HomePage extends StatelessWidget {
                   },
                 ),
               ),
-              // Para agregar más opciones a futuro, agrega otro
-              // SizedBox(height: 16) + Expanded(child: _MenuCard(...))
-              // y ajusta el "flex" si quieres tamaños distintos entre tarjetas.
             ],
           ),
         ),
@@ -78,46 +76,59 @@ class _MenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
+    return Material(
       color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: HomePage.azul.withOpacity(0.25)),
-      ),
+      borderRadius: BorderRadius.circular(20),
+      elevation: 3,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(22),
-                decoration: BoxDecoration(
-                  color: HomePage.azul.withOpacity(0.1),
-                  shape: BoxShape.circle,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: HomePage.azul.withOpacity(0.25)),
+          ),
+          width: double.infinity,
+          height: double.infinity,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 90,
+                  height: 90,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: HomePage.azul.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: HomePage.azul, size: 48),
                 ),
-                child: Icon(icon, color: HomePage.azul, size: 64),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                const SizedBox(height: 18),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    height: 1.2,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey.shade600,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
