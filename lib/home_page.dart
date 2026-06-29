@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: azul,
         foregroundColor: Colors.white,
-        title: const Text('Mis notas'),
+        title: const Text(''),
       ),
       body: SafeArea(
         child: Padding(
@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
                           aspectRatio: 1,
                           child: _MenuCard(
                             icon: Icons.receipt_long_outlined,
-                            title: 'Nota de\nEntrega',
+                            title: 'Nota de\nentrega',
                             onTap: () {
                               Navigator.push(
                                 context,
