@@ -120,6 +120,19 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
   double get totalGeneral =>
       detalles.fold(0.0, (sum, item) => sum + item.totalValue);
 
+  /// Suma de la columna CANT. de todas las filas.
+  double get cantidadGeneral =>
+      detalles.fold(0.0, (sum, item) => sum + item.cantidad);
+
+  /// Formatea un número quitando decimales si es un entero exacto
+  /// (ej. 12.0 -> "12", 12.5 -> "12.50").
+  String _formatoCantidad(double valor) {
+    if (valor == valor.roundToDouble()) {
+      return valor.toInt().toString();
+    }
+    return valor.toStringAsFixed(2);
+  }
+
   void _agregarFila() {
     setState(() {
       detalles.add(DetalleItem());
@@ -162,6 +175,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
       porLoSiguiente: porLoSiguienteCtrl.text,
       items: items,
       totalGeneral: totalGeneral,
+      cantidadGeneral: cantidadGeneral,
     );
   }
 
@@ -273,7 +287,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                   const SizedBox(height: 10),
                   _buildAgregarBoton(),
                   const Divider(height: 24),
-                  _buildTotalGeneral(),
+                  _buildTotales(),
                   const SizedBox(height: 6),
                   const Center(
                     child: Text(
@@ -505,10 +519,30 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
     );
   }
 
-  Widget _buildTotalGeneral() {
+  /// Muestra la cantidad total (suma de la columna CANT.) junto con el
+  /// Total Bs. general, alineados a la derecha como en la nota física.
+  Widget _buildTotales() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: azulClaro,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: azul),
+          ),
+          child: Text(
+            'CANT. TOTAL: ${_formatoCantidad(cantidadGeneral)}',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: azul,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
