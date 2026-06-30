@@ -419,8 +419,8 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
               children: [
                 SizedBox(width: 50, child: _HeaderCell('CANT.')),
                 Expanded(child: _HeaderCell('DETALLE')),
-                SizedBox(width: 70, child: _HeaderCell('P.U.')),
-                SizedBox(width: 80, child: _HeaderCell('TOTAL')),
+                SizedBox(width: 56, child: _HeaderCell('P.U.')),
+                SizedBox(width: 64, child: _HeaderCell('TOTAL')),
                 SizedBox(width: 36, child: SizedBox()),
               ],
             ),
@@ -457,7 +457,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                     ),
                   ),
                   SizedBox(
-                    width: 70,
+                    width: 56,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: TextField(
@@ -472,7 +472,7 @@ class _NotaVentaPageState extends State<NotaVentaPage> {
                     ),
                   ),
                   SizedBox(
-                    width: 80,
+                    width: 64,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: TextField(
