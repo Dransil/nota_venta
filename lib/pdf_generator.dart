@@ -34,6 +34,7 @@ class NotaVentaPdfGenerator {
     required String porLoSiguiente,
     required List<DetalleItemPdf> items,
     required double totalGeneral,
+    required double cantidadGeneral,
   }) async {
     final doc = pw.Document();
 
@@ -51,7 +52,7 @@ class NotaVentaPdfGenerator {
               pw.SizedBox(height: 12),
               _buildTabla(items),
               pw.SizedBox(height: 10),
-              _buildTotal(totalGeneral),
+              _buildTotal(totalGeneral, cantidadGeneral),
               pw.Spacer(),
               pw.Center(
                 child: pw.Text(
@@ -210,25 +211,51 @@ class NotaVentaPdfGenerator {
     );
   }
 
-  static pw.Widget _buildTotal(double totalGeneral) {
-    return pw.Align(
-      alignment: pw.Alignment.centerRight,
-      child: pw.Container(
-        padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: pw.BoxDecoration(
-          color: azulClaro,
-          border: pw.Border.all(color: azul, width: 0.7),
-          borderRadius: pw.BorderRadius.circular(4),
-        ),
-        child: pw.Text(
-          'TOTAL Bs. ${totalGeneral.toStringAsFixed(2)}',
-          style: pw.TextStyle(
-            fontWeight: pw.FontWeight.bold,
-            fontSize: 13,
-            color: azul,
+  static String _formatoCantidad(double valor) {
+    if (valor == valor.roundToDouble()) {
+      return valor.toInt().toString();
+    }
+    return valor.toStringAsFixed(2);
+  }
+
+  static pw.Widget _buildTotal(double totalGeneral, double cantidadGeneral) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.end,
+      children: [
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: pw.BoxDecoration(
+            color: azulClaro,
+            border: pw.Border.all(color: azul, width: 0.7),
+            borderRadius: pw.BorderRadius.circular(4),
+          ),
+          child: pw.Text(
+            'CANT. TOTAL: ${_formatoCantidad(cantidadGeneral)}',
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              fontSize: 11,
+              color: azul,
+            ),
           ),
         ),
-      ),
+        pw.SizedBox(width: 8),
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: pw.BoxDecoration(
+            color: azulClaro,
+            border: pw.Border.all(color: azul, width: 0.7),
+            borderRadius: pw.BorderRadius.circular(4),
+          ),
+          child: pw.Text(
+            'TOTAL Bs. ${totalGeneral.toStringAsFixed(2)}',
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              fontSize: 13,
+              color: azul,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
